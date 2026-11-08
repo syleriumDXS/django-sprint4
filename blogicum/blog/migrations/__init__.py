@@ -1,0 +1,1 @@
+"""Blog database migrations package."""
