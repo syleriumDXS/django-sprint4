@@ -98,10 +98,13 @@ def find_edit_and_delete_urls(
     )
 
     if get_page_context_form(user_client, comment_links[0].get("href")).key:
-        # Старая конструкция. Нуждна была, чтобы определить порядок ссылок и
-        # отличить ссылку на удаление от ссылки на редактирование.
-        # Сейчас проверяется, что в шаблоне не изменялся порядок ссылок.
-        pass
+        # Found a link leading to a form, let's make sure the other one doesn't
+        assert not get_page_context_form(
+            user_client, comment_links[1].get("href")
+        ).key, (
+            "Убедитесь, что в словарь контекста для страницы удаления"
+            " комментария не передаётся объект формы. "
+        )
     elif get_page_context_form(user_client, comment_links[1].get("href")).key:
         edit_link, del_link = del_link, edit_link
     else:

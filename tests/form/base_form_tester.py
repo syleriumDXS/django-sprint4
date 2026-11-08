@@ -90,31 +90,11 @@ class BaseFormTester(BaseTester):
 
         soup = bs4.BeautifulSoup(response.content, features="html.parser")
 
-        # Все формы на странице
-        forms = soup.find_all("form")
-        if not forms:
+        form_tag = soup.find("form")
+        if not form_tag:
             raise FormTagMissingException()
 
-        # Фильтруем, все кроме logout-формы
-        candidates = []
-        for f in forms:
-            if (
-                ("logout" not in ((f.get("action") or "").lower()))
-                and ("выйти" not in f.get_text(" ",strip=True).lower())
-                ):
-                candidates.append(f)
-
-        if not candidates:
-            candidates = forms
-
-        if getattr(self, "has_textarea", False):
-            textarea_candidates = [f for f in candidates if f.find("textarea")]
-            if textarea_candidates:
-                candidates = textarea_candidates
-
-        form_tag = candidates[0]
         self._form_tag = form_tag
-
         self._action = self._form_tag.get("action", "") or (
             response.request["PATH_INFO"]
         )
